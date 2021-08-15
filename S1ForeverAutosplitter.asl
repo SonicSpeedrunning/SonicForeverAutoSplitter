@@ -2,23 +2,39 @@ state("SonicForever") {}
 
 init
 {
-
-    if ( game.Is64Bit() ) {
+    if (modules.First().ModuleMemorySize == 0x3645000) {
+        version = "v1.3.4 64bit";
+        vars.watchers = new MemoryWatcherList {
+            new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x5EC2F8 ) ) { Name = "act", Enabled = true },
+            new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x5EC0B5 ) ) { Name = "zone", Enabled = true },
+            new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x37D11C ) ) { Name = "state", Enabled = true },
+            new MemoryWatcher<ushort>( new DeepPointer(game.ProcessName + ".exe", 0x37FDE2 ) ) { Name = "bossposition", Enabled = true }
+        };
+    } else if (game.Is64Bit()) {
+        version = "v1.3.3 64bit or lower";
         vars.watchers = new MemoryWatcherList {
             new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x5E5ED0 ) ) { Name = "act", Enabled = true },
             new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x5E5C95 ) ) { Name = "zone", Enabled = true },
             new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x376CFC ) ) { Name = "state", Enabled = true },
             new MemoryWatcher<ushort>( new DeepPointer(game.ProcessName + ".exe", 0x3799C2 ) ) { Name = "bossposition", Enabled = true }
         };
+    } else if (modules.First().ModuleMemorySize == 0x3623000) {
+	    version = "v1.3.4 32bit";
+        vars.watchers = new MemoryWatcherList {
+            new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x7D50F0 ) ) { Name = "act", Enabled = true },
+            new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x7A2D85 ) ) { Name = "zone", Enabled = true },
+            new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x50F294 ) ) { Name = "state", Enabled = true },
+            new MemoryWatcher<ushort>( new DeepPointer(game.ProcessName + ".exe", 0x511F5A ) ) { Name = "bossposition", Enabled = true }
+        };
     } else {
+        version = "v1.3.3 32bit or lower";
         vars.watchers = new MemoryWatcherList {
             new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x7D43D8 ) ) { Name = "act", Enabled = true },
             new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x7A2975 ) ) { Name = "zone", Enabled = true },
             new MemoryWatcher<byte>( new DeepPointer(game.ProcessName + ".exe", 0x48867C ) ) { Name = "state", Enabled = true },
             new MemoryWatcher<ushort>( new DeepPointer(game.ProcessName + ".exe", 0x48B342 ) ) { Name = "bossposition", Enabled = true }
-            
         };
-    }
+	}
     vars.expectedzone = 0;
     vars.expectedact = 0;
     vars.insaveselect = 0;
