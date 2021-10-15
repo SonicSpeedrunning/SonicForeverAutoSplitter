@@ -2,7 +2,7 @@ state("SonicForever") {}
 
 init
 {
-    vars.watchers = new MemoryWatcherList();
+	vars.watchers = new MemoryWatcherList();
     var scanner = new SignatureScanner(game, modules.First().BaseAddress, modules.First().ModuleMemorySize);
     IntPtr ptr = IntPtr.Zero;
 
@@ -114,23 +114,40 @@ init
 	vars.AccumulatedIGT = 0d;
 }
 
-update {
+startup
+{
+	settings.Add("GH1", true, "Green Hill Zone - Act 1");
+	settings.Add("GH2", true, "Green Hill Zone - Act 2");
+	settings.Add("GH3", true, "Green Hill Zone - Act 3");
+	settings.Add("MZ1", true, "Marble Zone - Act 1");
+	settings.Add("MZ2", true, "Marble Zone - Act 2");
+	settings.Add("MZ3", true, "Marble Zone - Act 3");
+	settings.Add("SY1", true, "Spring Yard Zone - Act 1");
+	settings.Add("SY2", true, "Spring Yard Zone - Act 2");
+	settings.Add("SY3", true, "Spring Yard Zone - Act 3");
+	settings.Add("LZ1", true, "Labyrinth Zone - Act 1");
+	settings.Add("LZ2", true, "Labyrinth Zone - Act 2");
+	settings.Add("LZ3", true, "Labyrinth Zone - Act 3");
+	settings.Add("SL1", true, "Star Light Zone - Act 1");
+	settings.Add("SL2", true, "Star Light Zone - Act 2");
+	settings.Add("SL3", true, "Star Light Zone - Act 3");
+	settings.Add("SB1", true, "Scrap Brain Zone - Act 1");
+	settings.Add("SB2", true, "Scrap Brain Zone - Act 2");
+	settings.Add("SB3", true, "Scrap Brain Zone - Act 3");
+	settings.Add("FZ", true, "Final Zone");
+}
+
+
+update
+{
     vars.watchers.UpdateAll(game);
 	if (timer.CurrentPhase == TimerPhase.NotRunning) vars.AccumulatedIGT = 0;		
 		
 	switch ((uint)vars.watchers["ZoneIndicator"].Current) {
-		case 0x6E69614D:
-		    vars.MenuItem = "MainMenu";
-			break;
-		case 0x65766153:
-			vars.MenuItem = "SaveSelect";
-			break;
-		case 0x656E6F5A:
-		    vars.MenuItem = "Zones";
-			break;
-		case 0x63657053:
-		    vars.MenuItem = "SpecialStages";
-			break;
+		case 0x6E69614D: vars.MenuItem = "MainMenu"; break;
+		case 0x65766153: vars.MenuItem = "SaveSelect"; break;
+		case 0x656E6F5A: vars.MenuItem = "Zones"; break;
+		case 0x63657053: vars.MenuItem = "SpecialStages"; break;
 	}
 	
 	if (vars.MenuItem == "Zones") current.LevelID = vars.watchers["LevelID"].Current;
@@ -158,11 +175,32 @@ reset
 split
 {
     if (current.LevelID == 18 && vars.watchers["BossPosition"].Changed && vars.watchers["BossPosition"].Current > 2450 ) {
-        return true;
+        return settings["FZ"];
     }
 
     if (current.LevelID == old.LevelID) return;
-    if (current.LevelID == old.LevelID + 1 && vars.MenuItem == "Zones") return true;
+    if (current.LevelID == old.LevelID + 1 && vars.MenuItem == "Zones") {
+		switch ((int)old.LevelID) {
+			case  0: return settings["GH1"];
+			case  1: return settings["GH2"];
+			case  2: return settings["GH3"];
+			case  3: return settings["MZ1"];
+			case  4: return settings["MZ2"];
+			case  5: return settings["MZ3"];
+			case  6: return settings["SY1"];
+			case  7: return settings["SY2"];
+			case  8: return settings["SY3"];
+			case  9: return settings["LZ1"];
+			case 10: return settings["LZ2"];
+			case 11: return settings["LZ3"];
+			case 12: return settings["SL1"];
+			case 13: return settings["SL2"];
+			case 14: return settings["SL3"];
+			case 15: return settings["SB1"];
+			case 16: return settings["SB2"];
+			case 17: return settings["SB3"];
+		}
+	}
 }
 
 gameTime
